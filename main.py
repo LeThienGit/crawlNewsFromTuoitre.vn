@@ -1,77 +1,137 @@
-from bs4 import BeautifulSoup
-from PIL import Image, ImageDraw, ImageFont
-import requests
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Control</title>
 
-def crawNewsData(baseUrl, url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
-    titles = soup.findAll('h3', class_='title-news')
-    links = [link.find('a').attrs["href"] for link in titles]
-    data = []
-    for link in links:
-        news = requests.get(baseUrl + link)
-        soup = BeautifulSoup(news.content, "html.parser")
-        title = soup.find("h1", class_="article-title").text
-        abstract = soup.find("h2", class_="sapo").text
-        body = soup.find("div", id="main-detail-body")
-        content = ""
-        try:
-            content = body.findChildren("p", recursive=False)[0].text + body.findChildren("p", recursive=False)[1].text
-        except:
-            content = ""
-        image = body.find("img").attrs["src"]
-        data.append({
-            "title": title,
-            "abstract": abstract,
-            "content": content,
-            "image": image,
-        })
-        print("craw " + title)
-    return data
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS -->
+
+    <link rel="stylesheet" href = "style.css">
+</head>
+<body>
+    <input type="checkbox" id="darkmode">
+    <div class="mobile">
+        <input type="radio" name = "pages" id="page-1">
+        <input type="radio" name = "pages" id="page-2">
+        <!-- Page 1 -->
+        <div class="page_1">
+            <!-- Top -->
+            <div class="top">
+                <i class="fas fa-bars"></i>
+                <label for="darkmode" id="darklabel">
+                    <i class="fa fa-mood" id="dark-mode" aria-hidden="true"></i>
+                </label>
+                <i class="fas fa-user"></i>
+            </div>
+
+            <!-- Top -->
+            <!-- Middle -->
+            <div class="middle">
+                <div class="hg">
+                    <h2>Good Morning <span>:)</span></h2>
+                </div>
+
+                <input type="radio" id="info_1"> 
+                <input type="radio" id="info_2">
+                <input type="radio" id="info_3">
+
+                <!-- Weather infor -->
+                <div class="weather-info">
+                    <!-- Details -->
+                    <div class="details">
+                        <div class="w-detail">
+                            <i class="fas fa-cloud-sun-rain"></i>
+                            <h4>Weather</h4>
+                        </div>
+
+                        <div class="w-detail">
+                            <h2>21C</h2>
+                            <h5>Heat</h5>
+                        </div>
+
+                        <div class="w-detail">
+                            <h2>83%</h2>
+                            <h5>Moisture</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Weather infor -->
+
+                <!-- cells -->
+                <div class="cells">
+                    <label for="info_1">
+                        <h4>Sat</h4>
+                    </label>
+
+                    <label for="info_2">
+                        <h4>Sun</h4>
+                    </label>
+
+                    <label for="info_3">
+                        <h4>Mon</h4>
+                    </label>
+                </div>
+                <!-- / cells -->
 
 
-def writeToImage(image, text, position, font, color, maxLine):
-    charPerLine = 650 // font.getsize('x')[0]
-    pen = ImageDraw.Draw(image)
-    yStart = position[1]
-    xStart = position[0]
-    point = 0
-    prePoint = 0
-    while point < len(text):
-        prePoint = point
-        point += charPerLine
-        while point < len(text) and text[point] != " ":
-            point -= 1
-        pen.text((xStart, yStart), text[prePoint:point], font=font, fill=color)
-        yStart += font.getsize('hg')[1]
-        maxLine -= 1
-        if (maxLine == 0):
-            if (point < len(text)):
-                pen.text((xStart, yStart), "...", font=font, fill="black")
-            break
+                <!-- devices -->
+                <div class="devices">
+                    <div class="d-master">
+                        <h3>4 Devices Connected</h3>
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </div>
 
+                    <!-- device -->
+                    <div class="device">
+                        <input type="checkbox" id="c1">
+                        <label for="c1" id="cc1">
+                            <div class="c1">
+                                <img src="img/lamp.webp" alt="">
+                                <h4>Lamp</h4>
+                            </div>
+                        </label>
 
-def makeFastNews(data):
-    for index, item in enumerate(data):
-        # make new image and tool to draw
-        image = Image.new('RGB', (650, 750), color="white")
-        pen = ImageDraw.Draw(image)
-        # load image from internet => resize => paste to main image
-        pen.rectangle(((0, 0), (650, 300)), fill="grey")
-        newsImage = Image.open(requests.get(item["image"], stream=True).raw)
-        newsImage.thumbnail((650, 300), Image.ANTIALIAS)
-        image.paste(newsImage, (650 // 2 - newsImage.width // 2, 300 // 2 - newsImage.height//2))
-        ## write title
-        titleFont = ImageFont.truetype("font/arial.ttf", 22)
-        writeToImage(image, item["title"], (10, 310), titleFont, "black", 3)
-        abstractFont = ImageFont.truetype("font/arial.ttf", 15)
-        writeToImage(image, item["abstract"], (10, 390), abstractFont, "gray", 4)
-        contentFont = ImageFont.truetype("font/arial.ttf", 20)
-        writeToImage(image, item["content"], (10, 460), contentFont, "black", 11)
-        name = "news-" + str(index) + ".png"
-        image.save("news/" + name)
-        print("saved to " + "news/" + name)
+                        <input type="checkbox" id="c2">
+                        <label for="c2" id="cc2">
+                            <div class="c1">
+                                <img src="img/tv.webp" alt="">
+                                <h4>TV</h4>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- /device -->
 
+                    <!-- device2 -->
+                    <div class="device device-2"></div>   
+                        <input type="checkbox" id="c3">
+                        <label for="c3" id="cc3">
+                            <div class="c1">
+                                <img src="img/fan.webp" alt="">
+                                <h4>A.C</h4>
+                                <span class="on"></span>
+                                <h6></h6>
+                            </div>
+                        </label>
 
-if __name__ == "__main__":
-    makeFastNews(crawNewsData("https://tuoitre.vn", "https://tuoitre.vn/tin-moi-nhat.htm"))
+                        <input type="checkbox" id="c4">
+                        <label for="c4" id="cc4">
+                            <div class="c1">
+                                <img src="img/fan.webp" alt="">
+                                <h4>WiFi</h4>
+                                <span class="off"></span>
+                                <h6></h6>
+                            </div>
+                        </label>
+                    <!-- /device2 -->            
+                </div>
+                <!--/ devices -->
+            </div>
+        </div>
+        <!-- Page 1 -->
+    </div>
+</body>
+</html>
